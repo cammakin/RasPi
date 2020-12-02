@@ -119,12 +119,12 @@ class LCD:
 
 
 	def write_gpio(self, data):
-	'''
-	'''
-		bit_comparator = 0b1
-		for pin in gpio_pins:
-			GPIO.output(pin, bit_comparator & data)
-			bit_comparator = bit_comparator << 1
+	        '''
+	        '''
+	        bit_comparator = 0b1
+	        for pin in gpio_pins:
+		        GPIO.output(pin, bit_comparator & data)
+		        bit_comparator = bit_comparator << 1
 
 
 	def __delay_ms(self, ms):
