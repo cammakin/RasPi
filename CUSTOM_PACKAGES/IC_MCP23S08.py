@@ -80,5 +80,3 @@ class IC_MCP23S08:
 	def test_module(self):
 		print("You have accessed a method of the IC_MCP23S08 module")
 		
-			
-
