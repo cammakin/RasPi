@@ -5,23 +5,23 @@ class LCD:
 
 
 	def __init__(self):
-            self.GPIO_init()
-            self.LCD_init()
-            self.GPIO_init()
-                
-            self.RS  = 36 # PIN_4
-            self.RW  = 35 # PIN_5
-            self.EN  = 32 # PIN_6
+        self.GPIO_init()
+        self.LCD_init()
+        self.GPIO_init()
+            
+        self.RS  = 36 # PIN_4
+        self.RW  = 35 # PIN_5
+        self.EN  = 32 # PIN_6
 
-            self.DB0  = 31 # PIN_7
-            self.DB0 = 29 # PIN_8
-            self.DB2 = 32 # PIN_9
-            self.DB3 = 22 # PIN_10
-            self.DB4 = 18 # PIN_11
-            self.DB5 = 16 # PIN_12
-            self.DB6 = 15 # PIN_13
-            self.DB7 = 13 # PIN_14
-            gpio_pins = [self.DB0, self.DB1, self.DB2, self.DB3, self.DB4, self.DB5, self.DB6, self.DB7]
+        self.DB0  = 31 # PIN_7
+        self.DB0 = 29 # PIN_8
+        self.DB2 = 32 # PIN_9
+        self.DB3 = 22 # PIN_10
+        self.DB4 = 18 # PIN_11
+        self.DB5 = 16 # PIN_12
+        self.DB6 = 15 # PIN_13
+        self.DB7 = 13 # PIN_14
+        gpio_pins = [self.DB0, self.DB1, self.DB2, self.DB3, self.DB4, self.DB5, self.DB6, self.DB7]
 
 
 	def print_string(self, data_string):
