@@ -1,5 +1,6 @@
 import time
 import RPi.GPIO as GPIO
+import IC_MCP23S08 as io_expander
 
 class LCD:
 
@@ -18,6 +19,7 @@ class LCD:
                 self.DB5 = 16 # PIN_12
                 self.DB6 = 15 # PIN_13
                 self.DB7 = 13 # PIN_14
+                self.io_mod = io_expander.IC_MCP23S08(0, 0)
                 self.gpio_pins = [self.DB0, self.DB1, self.DB2, self.DB3, self.DB4, self.DB5, self.DB6, self.DB7]
                 self.GPIO_init()
                 self.LCD_init()

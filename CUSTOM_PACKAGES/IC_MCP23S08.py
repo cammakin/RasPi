@@ -10,73 +10,95 @@ import spidev
 
 class IC_MCP23S08:
 
-	_CONTROL_BYTE_PREFIX = 0b01000
-	_GPIO_ADDR = 0x09
+    def __init__(self, A_ZERO, A_ONE):
 
-	def __init__(self, A_ZERO, A_ONE):
-		
-		self.spidev_init()
-		self.A_ZERO = A_ZERO	
-		self.A_ONE 	= A_ONE
-		self.control_byte = _CONTROL_BYTE_PREFIX << 3 | A_ONE << 2 | A_ZERO << 1
-		self.gpio = READ_REG(_GPIO_ADDR)
-		
+        self.spi = self.spidev_init()
+        
+        self._CONTROL_BYTE_PREFIX = 0b01000 #Every control has this prefix
+        self._GPIO_ADDR = 0x09 #Address of the GPIO Register
+        self.IO_DIR_ADDR = 0x00 #Address of IO_DIR Register
+     
+        # Init IC address
+        self.A_ZERO = A_ZERO
+        self.A_ONE 	= A_ONE
 
-	# This will set Pin pin_num to Value val (0 or 1)
-	def WRITE_GPIO(self, pin_num, val):
-		if(val != 0 or val != 1):
-			return
-		if(pin_num > 7 or pin_num < 0):
-			return
-		opcode = self.control_byte
-		data = write_bit(pin_num, val, gpio)
-		spi.xfer([opcode, _GPIO_ADDR, data])
+        #  Instruction control_byte (opcode) is a static 5bits + device addr
+        self.control_byte = self._CONTROL_BYTE_PREFIX << 3 | A_ONE << 2 | A_ZERO << 1
+        
+        #Set IO to all Outputs
+        self.config_io_dir(0x00)
 
 
-	def READ_GPIO(self, pin_num):
-		opcode = self.control_byte | 0b1
+    def WRITE_GPIO(self, pin_num, val):
+        '''
+        This will set Pin pin_num to Value val (0 or 1)
+        '''
+        # Check for valid params
+        if(val != 0 and val != 1):
+            return
+        if(pin_num > 7 or pin_num < 0):
+            return
 
-	def WRITE_REG(self, reg, data):
-		opcode = self.control_byte
-		spi.xfer([opcode, reg, data])
-
-	def READ_REG(self, reg_addr):
-		opcode = self.control_byte | 0b1
-		return spi.xfer2([opcode, reg_addr, 0x0])[2]
-
-
-	def spidev_init(self):
-		spi_bus = 0  # SPI0 = 0; SPI1 = 1
-		device  = 0  # CE is active low on slave
-		self.spi = spidev.SpiDev()
-		self.spi.open(spi_bus, device)
-		self.spi.max_speed_hz = 10000000 # 10MHz
+        opcode = self.control_byte
+        data = self.write_bit(pin_num, val, self.READ_REG(self._GPIO_ADDR)[2])
+        self.spi.xfer([opcode, self._GPIO_ADDR, data])
 
 
-	'''
-	# Function write_bit: Takes a binary string and modifies a single bit in it
-	# Input: bit - value of significance of the bit you want to modify
-	#		 val - value (1 or 0) you want the bit to become
-	#	 	 bin_string - binary string you want to modify
-	# Output: binary string with single bit updated
-	'''
-	def write_bit(self, bit, val, bin_string):
-		current_bit_value = (bin_string & (0b1 << bit)) >> bit
-		if(current_bit_value == val):
-			return bin_string
-		else:
-			if(current_bit_value == 0):
-				return bin_string + (0b1 << (bit))
-			else:
-				return  bin_string - (0b1 << (bit))
+    def READ_GPIO(self, pin_num):
+        opcode = self.control_byte | 0b1
+        return self.spi.xfer2([opcode, self._GPIO_ADDR, 0x0])[2]
+
+    def WRITE_REG(self, reg, data):
+        opcode = self.control_byte
+        self.spi.xfer([opcode, reg, data])
+
+    def READ_REG(self, reg_addr):
+        opcode = self.control_byte | 0b1
+        return self.spi.xfer2([opcode, reg_addr, 0x0])
 
 
-	'''
-	# Functinon cleanup: closes spi
-	'''
-	def cleanup(self):
-		self.spi.close()
+    def spidev_init(self):
+        '''
+        Init SPI from Pi to IC using spidev package
+        '''
+        spi_bus = 0  # SPI0 = 0; SPI1 = 1
+        device  = 0  # CE is active low on slave
+        spi = spidev.SpiDev()
+        spi.open(spi_bus, device)
+        spi.max_speed_hz = 10000000 # 10MHz
+        return spi
 
-	def test_module(self):
-		print("You have accessed a method of the IC_MCP23S08 module")
-		
+
+    def write_bit(self, bit, val, bin_string):
+        '''
+        Function write_bit: Takes a binary string and modifies a single bit in it.
+        Use this to preformat the 8bits that will be sent to the IC
+        Input: bit - value of significance of the bit you want to modify
+            val - value (1 or 0) you want the bit to become
+            bin_string - binary string you want to modify
+        Output: binary string with single bit updated
+        '''
+        current_bit_value = (int(bin_string) & (0b1 << bit)) >> bit
+        if(current_bit_value == val):
+            return bin_string
+        else:
+            if(current_bit_value == 0):
+                return bin_string + (0b1 << (bit))
+            else:
+                return  bin_string - (0b1 << (bit))
+
+    def config_io_dir(self, directions):
+        '''
+        Configres the IO Direction of the GPIO Pins
+        '''
+        self.WRITE_REG(self.IO_DIR_ADDR, directions)            
+
+    
+    def cleanup(self):
+        '''
+        # Functinon cleanup: closes spi
+        '''
+        self.spi.close()
+
+    def test_module(self):
+        print("You have accessed a method of the IC_MCP23S08 module")
