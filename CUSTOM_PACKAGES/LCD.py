@@ -24,8 +24,12 @@ class LCD:
             '''
             self.LCD_clear()
             adr = 0
-            #Ensure data string fits on display (16x2)
-            
+#             #Clear Screen
+#             if(len(data_string)<32):
+#                 n = 32-len(data_string)
+#                 while(n>0):
+#                     data_string = data_string + " "
+#                     n = n - 1
             for char in data_string:
                 if(adr == 16):
                     adr = 64
@@ -76,7 +80,7 @@ class LCD:
             Returns:    void
             Clears display
             '''
-#             self.send_cmd(0b00000001)
+            self.send_cmd(0b00000001)
 
 
     def LCD_init(self):
