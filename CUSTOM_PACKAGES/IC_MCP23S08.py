@@ -25,11 +25,11 @@ class IC_MCP23S08:
         #  Instruction control_byte (opcode) is a static 5bits + device addr
         self.control_byte = self._CONTROL_BYTE_PREFIX << 3 | A_ONE << 2 | A_ZERO << 1
         
-        #Set IO to all Outputs
+        # Reset IO to all Outputs
         self.config_io_dir(0x00)
 
 
-    def WRITE_GPIO(self, pin_num, val):
+    def WRITE_GPIO_PIN(self, pin_num, val):
         '''
         This will set Pin pin_num to Value val (0 or 1)
         '''
@@ -44,15 +44,30 @@ class IC_MCP23S08:
         self.spi.xfer([opcode, self._GPIO_ADDR, data])
 
 
-    def READ_GPIO(self, pin_num):
+    def READ_GPIO_PIN(self, pin_num):
+        '''
+        Reads the value of a GPIO Pin
+        '''
         opcode = self.control_byte | 0b1
-        return self.spi.xfer2([opcode, self._GPIO_ADDR, 0x0])[2]
+        if(pin_num > 7 or pin_num < 0):
+            return -1
+        try:
+            pin_val = bin(self.spi.xfer2([opcode, self._GPIO_ADDR, 0x0])[2])[pin_num]
+        except IndexError:
+            return 0
+        return pin_val
 
     def WRITE_REG(self, reg, data):
+        '''
+        Writes provided date to provided register
+        '''
         opcode = self.control_byte
         self.spi.xfer([opcode, reg, data])
 
     def READ_REG(self, reg_addr):
+        '''
+        Returns value in provided register
+        '''
         opcode = self.control_byte | 0b1
         return self.spi.xfer2([opcode, reg_addr, 0x0])
 
