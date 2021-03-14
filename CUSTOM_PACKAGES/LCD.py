@@ -1,3 +1,9 @@
+#!/usr/bin/python
+
+# LCD "Driver"
+# Author: Cameron Makin
+# Date: 03/14/2021
+# Description: Creates an OOP interpretation of the LCD
 import time
 import RPi.GPIO as GPIO
 from CUSTOM_PACKAGES import IC_MCP23S08 as io_expander

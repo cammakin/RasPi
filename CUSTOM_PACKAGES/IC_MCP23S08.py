@@ -1,4 +1,8 @@
-# Module for SPI IO Expander
+#!/usr/bin/python
+# File for SPI IO Expander
+# Author: Cameron Makin
+# Date: 03/14/2021
+# Notes: 
 
 #TODO: Init with a read for any registers and keep track of their bits 
 #	   as they are changed to mitigate a read per every write
